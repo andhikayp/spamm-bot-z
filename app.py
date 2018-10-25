@@ -33,9 +33,9 @@ from linebot.models import (
 
 app = Flask(__name__)
 # Channel Access Token
-line_bot_api = LineBotApi('t5b5X0LHwCZQHy55X75+FZfjBWBDfvw+NWgDIruLX/EoslSALtJHPdaBsVRlkjFUeQRscNzXPtkTI8dYZH6I+ku1yyGazFjq8KShojdmcowVeXZYWNjkd7oT5nAxHZIK8q+lM/KR0DM+IwdyO5lyGQdB04t89/1O/w1cDnyilFU=')
+line_bot_api = LineBotApi('GCBe4+d3hDHbGXgmxJGkibobzYpRo/F9nV54kI/Rq4A5hd8bri0Uu5MGHpDBEYRO8mRADxOFJ3va0QGJyi1kUE0huzidugjCzRzFOhwIWl7a7Shd3nisSM1waY2XNqIlc1oxCosM+wxJGZkaJ6smNQdB04t89/1O/w1cDnyilFU=')
 # Channel Secret
-handler = WebhookHandler('b38e05865272e44156c19da5d5191c83')
+handler = WebhookHandler('8a3eb9b7cd1e5e0a89b47904739187b0')
 
 #===========[ NOTE SAVER ]=======================
 notes = {}
