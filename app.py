@@ -107,7 +107,7 @@ def callback():
 
 @handler.add(JoinEvent)
 def handle_join(event):
-    line_bot_api.reply_message(event.reply_token,TextSendMessage(text='Halo bro salam kenal, wes siap tak spam?...' + event.source.type))
+    line_bot_api.reply_message(event.reply_token,TextSendMessage(text='Halo bro salam kenal, sudah siap aku spam?...\nKetik '/menu' untuk melihat fitur yang telah tersedia'))
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -144,7 +144,7 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=menu7))
 #MENU SANGAR
     elif(data[0]=='/sangar'):
-        pro = "Wong suroboyo terkenal karo kesangarane. Sak piro sangarmu cak?\n1. lihat-[id]\n2. tambah-[id]-[kesangaran]\n3. hapus-[id]\n4. ganti-[id lama]-[id baru]-[kesangaran baru]\n5. kabeh"
+        pro = "Wong suroboyo terkenal karo kesangarane. Sak piro sangarmu cak?\n1. lihat-[id]\n2. tambah-[id]-[kesangaran]\n"
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=pro))
 
 #SUB MENU SANGAR
@@ -320,7 +320,7 @@ def handle_message(event):
     
 #CHAT 1:1
     elif not(isinstance(event.source, SourceGroup) or isinstance(event.source, SourceRoom)):
-        line_bot_api.reply_message(event.reply_token,TextSendMessage(text='Hai,' +profile.display_name+'. Bahasa opo iki?\n"'+event.message.text+'"\nKok gak jelas banget'))
+        line_bot_api.reply_message(event.reply_token,TextSendMessage(text='Hai ' +profile.display_name+', kata kunci "'+event.message.text+'" belum tersedia untuk saat ini. Ketik "/menu" untuk melihat kata kunci yang telah tersedia'))
     
     #line_bot_api.multicast(['U8d343d76a1c15caad6dba2d2b5dab241'], TextSendMessage(text='Selamat Siang!'))
     elif (data2[0]=='/spamkata'):
