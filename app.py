@@ -107,7 +107,7 @@ def callback():
 
 @handler.add(JoinEvent)
 def handle_join(event):
-    line_bot_api.reply_message(event.reply_token,TextSendMessage(text='Halo bro salam kenal, sudah siap aku spam?...\nKetik '/menu' untuk melihat fitur yang telah tersedia'))
+    line_bot_api.reply_message(event.reply_token,TextSendMessage(text='Halo bro salam kenal, sudah siap aku spam?...\nKetik "/menu" untuk melihat fitur yang telah tersedia'))
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
