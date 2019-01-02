@@ -1,3 +1,6 @@
+from __future__ import unicode_literals
+from argparse import ArgumentParser
+
 from flask import Flask, request, abort
 from linebot import (
     LineBotApi, WebhookHandler
@@ -22,13 +25,14 @@ from linebot.models import (
     TemplateSendMessage, ConfirmTemplate, MessageAction,
     ButtonsTemplate, ImageCarouselTemplate, ImageCarouselColumn, URIAction,
     PostbackAction, DatetimePickerAction,
+    CameraAction, CameraRollAction, LocationAction,
     CarouselTemplate, CarouselColumn, PostbackEvent,
     StickerMessage, StickerSendMessage, LocationMessage, LocationSendMessage,
     ImageMessage, VideoMessage, AudioMessage, FileMessage,
     UnfollowEvent, FollowEvent, JoinEvent, LeaveEvent, BeaconEvent,
     FlexSendMessage, BubbleContainer, ImageComponent, BoxComponent,
     TextComponent, SpacerComponent, IconComponent, ButtonComponent,
-    SeparatorComponent,
+    SeparatorComponent, QuickReply, QuickReplyButton
 )
 
 app = Flask(__name__)
@@ -39,6 +43,17 @@ handler = WebhookHandler('8a3eb9b7cd1e5e0a89b47904739187b0')
 
 #===========[ NOTE SAVER ]=======================
 notes = {}
+
+static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
+# function for create tmp dir for download content
+def make_static_tmp_dir():
+    try:
+        os.makedirs(static_tmp_path)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST and os.path.isdir(static_tmp_path):
+            pass
+        else:
+            raise
 
 #REQUEST DATA MHS
 def carimhs(nmr):
@@ -178,6 +193,30 @@ def handle_follow(event):
 @handler.add(UnfollowEvent)
 def handle_unfollow():
     app.logger.info("Got Unfollow event")
+
+@handler.add(LeaveEvent)
+def handle_leave():
+    app.logger.info("Got leave event")
+
+@handler.add(PostbackEvent)
+def handle_postback(event):
+    if event.postback.data == 'ping':
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='pong'))
+    elif event.postback.data == 'datetime_postback':
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text=event.postback.params['datetime']))
+    elif event.postback.data == 'date_postback':
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text=event.postback.params['date']))
+
+@handler.add(BeaconEvent)
+def handle_beacon(event):
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(
+            text='Got beacon event. hwid={}, device_message(hex string)={}'.format(
+                event.beacon.hwid, event.beacon.dm)))
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -372,6 +411,35 @@ def handle_message(event):
             ]
         )
     ))
+
+    elif text == 'quick_reply':
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(
+                text='Quick reply',
+                quick_reply=QuickReply(
+                    items=[
+                        QuickReplyButton(
+                            action=PostbackAction(label="label1", data="data1")
+                        ),
+                        QuickReplyButton(
+                            action=MessageAction(label="label2", text="text2")
+                        ),
+                        QuickReplyButton(
+                            action=DatetimePickerAction(label="label3",
+                                                        data="data3",
+                                                        mode="date")
+                        ),
+                        QuickReplyButton(
+                            action=CameraAction(label="label4")
+                        ),
+                        QuickReplyButton(
+                            action=CameraRollAction(label="label5")
+                        ),
+                        QuickReplyButton(
+                            action=LocationAction(label="label6")
+                        ),
+                    ])))
 
     #TINGGALKAN GROUP/ROOM
     elif text=="/bye":
