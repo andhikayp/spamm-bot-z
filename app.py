@@ -109,6 +109,109 @@ def callback():
 def handle_join(event):
     line_bot_api.reply_message(event.reply_token,TextSendMessage(text='Halo bro salam kenal, sudah siap aku spam?...\nKetik "/menu" untuk melihat fitur yang telah tersedia'))
 
+
+@handler.add(MessageEvent, message=LocationMessage)
+def handle_location_message(event):
+    line_bot_api.reply_message(
+        event.reply_token,
+        LocationSendMessage(
+            title=event.message.title, address=event.message.address,
+            latitude=event.message.latitude, longitude=event.message.longitude
+        )
+    )
+
+@handler.add(MessageEvent, message=StickerMessage)
+def handle_sticker_message(event):
+    line_bot_api.reply_message(
+        event.reply_token,
+        StickerSendMessage(
+            package_id=event.message.package_id,
+            sticker_id=event.message.sticker_id)
+    )
+
+# Other Message Type
+@handler.add(MessageEvent, message=(ImageMessage, VideoMessage, AudioMessage))
+def handle_content_message(event):
+    if isinstance(event.message, ImageMessage):
+        ext = 'jpg'
+    elif isinstance(event.message, VideoMessage):
+        ext = 'mp4'
+    elif isinstance(event.message, AudioMessage):
+        ext = 'm4a'
+    else:
+        return
+    message_content = line_bot_api.get_message_content(event.message.id)
+    with tempfile.NamedTemporaryFile(dir=static_tmp_path, prefix=ext + '-', delete=False) as tf:
+        for chunk in message_content.iter_content():
+            tf.write(chunk)
+        tempfile_path = tf.name
+    dist_path = tempfile_path + '.' + ext
+    dist_name = os.path.basename(dist_path)
+    os.rename(tempfile_path, dist_path)
+    line_bot_api.reply_message(
+        event.reply_token, [
+            TextSendMessage(text='Save content.'),
+            TextSendMessage(text=request.host_url + os.path.join('static', 'tmp', dist_name))
+        ])
+
+@handler.add(MessageEvent, message=FileMessage)
+
+def handle_file_message(event):
+
+    message_content = line_bot_api.get_message_content(event.message.id)
+
+    with tempfile.NamedTemporaryFile(dir=static_tmp_path, prefix='file-', delete=False) as tf:
+
+        for chunk in message_content.iter_content():
+
+            tf.write(chunk)
+
+        tempfile_path = tf.name
+
+
+
+    dist_path = tempfile_path + '-' + event.message.file_name
+
+    dist_name = os.path.basename(dist_path)
+
+    os.rename(tempfile_path, dist_path)
+
+
+
+    line_bot_api.reply_message(
+
+        event.reply_token, [
+
+            TextSendMessage(text='Save file.'),
+
+            TextSendMessage(text=request.host_url + os.path.join('static', 'tmp', dist_name))
+
+        ])
+
+
+
+
+
+@handler.add(FollowEvent)
+
+def handle_follow(event):
+
+    line_bot_api.reply_message(
+
+        event.reply_token, TextSendMessage(text='Got follow event'))
+
+
+
+
+
+@handler.add(UnfollowEvent)
+
+def handle_unfollow():
+
+    app.logger.info("Got Unfollow event")
+
+
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     teks = event.message.text
